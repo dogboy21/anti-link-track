@@ -1,0 +1,31 @@
+on:
+  release:
+    types: [created]
+
+jobs:
+  releases-matrix:
+    name: Release Go Binary
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        goos: [linux, windows, darwin]
+        goarch: ["386", amd64, arm64]
+        exclude:
+          - goarch: "386"
+            goos: darwin
+          - goarch: arm64
+            goos: windows
+          - goarch: arm64 # the systray library currently doesn't support Apple Silicon
+            goos: darwin
+    steps:
+      - uses: actions/checkout@v3
+      - name: Download rules
+        run: curl https://raw.githubusercontent.com/ClearURLs/Rules/master/data.min.json -o rules.json
+      - uses: wangyoucao577/go-release-action@v1.34
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          goos: ${{ matrix.goos }}
+          goarch: ${{ matrix.goarch }}
+          ldflags: "-s -w -H=windowsgui"
+          md5sum: false
+          sha256sum: true
