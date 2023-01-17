@@ -9,13 +9,9 @@ jobs:
     strategy:
       matrix:
         goos: [linux, windows, darwin]
-        goarch: ["386", amd64, arm64]
+        goarch: ["386", amd64]
         exclude:
           - goarch: "386"
-            goos: darwin
-          - goarch: arm64
-            goos: windows
-          - goarch: arm64 # the systray library currently doesn't support Apple Silicon
             goos: darwin
     steps:
       - uses: actions/checkout@v3
